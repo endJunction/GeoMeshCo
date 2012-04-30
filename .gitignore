@@ -1,0 +1,5 @@
+*.o
+*.sw[op]
+*.vtk
+build/
+data/
