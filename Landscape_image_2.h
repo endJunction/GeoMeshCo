@@ -98,50 +98,38 @@ class Landscape_image_2
     FT
     operator()(const Point_3& p) const
     {
-        int x0 = std::rintl(CGAL::to_double(p.x()));
-        int y0 = std::rintl(CGAL::to_double(p.y()));
+        const int x0 = std::floor(CGAL::to_double(p.x()));
+        const int y0 = std::floor(CGAL::to_double(p.y()));
+        const FT* p0 = &data[0] + y0 * height + x0;
+
+        if (x0 < 0 || y0 < 0)
+            return -1;
 
         FT f;
 #ifdef CONSTANT_INTERPOLATION
-        if (x0 < 0 || y0 < 0 || x0 >= width || y0 >= height)
+        if (x0 >= width || y0 >= height)
             return -1;
 
-        f = data[y0 * height + x0];
+        f = *p0;
 #endif  // CONSTANT_INTERPOLATION
 
 #ifdef LINEAR_INTERPOLATION
-        uint32 x1 = x0;
-        uint32 y1 = y0;
 
-        const FT delta_x = p.x() - x0;
-        const FT delta_y = p.y() - y0;
-
-        if (delta_x < 0)
-            x0--;
-        else if (delta_x > 0)
-            x1++;
-
-        if (delta_y < 0)
-            y0--;
-        else if (delta_y > 0)
-            y1++;
-
-        if (x0 < 0 || y0 < 0 || x1 >= width || y1 >= height)
+        if (x0 + 1 >= width || y0 + 1 >= height)
             return -1;
 
-        if (x0 == x1 && y0 == y1)
-            f = data[y0 * height + x0];
-        else if (x0 == x1 && y0 != y1)
-            f = data[y0 * height + x0]*(1. - y0 - p.y()) +
-                data[y1 * height + x0]*(y0 + p.y());
-        else if (x0 != x1 && y0 == y1)
-            f = data[y0 * height + x0]*(1. - x0 - p.x()) +
-                data[y0 * height + x1]*(x0 + p.x());
-        else
-            f = data[y0 * height + x0] * (x1 - p.x())*(y1 - p.y()) +
-                data[y0 * height + x1] * (p.x() - x0)*(y1 - p.y()) +
-                data[y1 * height + x0] * (x1 - p.x())*(p.y() - y0) +
-                data[y1 * height + x1] * (p.x() - x0)*(p.y() - y0);
+        const FT& f00 = p0[0 * height + 0];
+        const FT& f01 = p0[0 * height + 1];
+        const FT& f10 = p0[1 * height + 0];
+        const FT& f11 = p0[1 * height + 1];
+
+        const FT dx = p.x() - x0;
+        const FT dy = p.y() - y0;
+
+        f = f00 * (1 - dx) * (1 - dy) +
+            f01 *      dx  * (1 - dy) +
+            f10 * (1 - dx) *      dy  +
+            f11 *      dx  *      dy;
 #endif  // LINEAR_INTERPOLATION
 
         if (f <= 0)
