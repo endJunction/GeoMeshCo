@@ -35,6 +35,7 @@
 #include <cmath>
 #include <CGAL/basic.h>
 
+#include "Image_2.h"
 
 namespace CGAL_Extension
 {
@@ -43,43 +44,46 @@ template <typename FT, typename Point_3>
 class Landscape_image_2
 {
     public:
-    Landscape_image_2(const std::string& file)
+    Landscape_image_2(const std::string& file, const double z_scale)
     {
-        tiff_file = TIFFOpen(file.c_str(), "r");
+        TIFF* tiff_file = TIFFOpen(file.c_str(), "r");  // TODO check result
+        uint32 width, height;
         TIFFGetField(tiff_file, TIFFTAG_IMAGELENGTH, &height);
         TIFFGetField(tiff_file, TIFFTAG_IMAGEWIDTH, &width);
 
-        uint32 bpp, spp;
+        uint32 bpp = 0, spp = 0;
         TIFFGetField(tiff_file, TIFFTAG_BITSPERSAMPLE, &bpp);
         TIFFGetField(tiff_file, TIFFTAG_SAMPLESPERPIXEL, &spp);
 
-        std::cerr << "bpp/spp " << bpp << "/" << spp << std::endl;
+        std::cout << "bpp/spp " << bpp << "/" << spp << std::endl;
 
         const uint32 linesize = TIFFScanlineSize(tiff_file);
-        std::cerr << "linesize " << linesize << std::endl;
+        std::cout << "linesize " << linesize << std::endl;
 
         unsigned char* buf = (unsigned char*) malloc(linesize * height);
         for (uint32 i = 0; i < height; i++)
             TIFFReadScanline(tiff_file, &buf[i * linesize], i, 0);
 
+        std::vector<FT> data;
         data = std::vector<FT>(width * height);
+
         // Scale image to [0, 1].
         const auto min_max = std::minmax_element((unsigned char*)buf,(unsigned char*)(buf + width * height));
-        const double scale = 1;// *(min_max.second) - *(min_max.first);
+        const double scale = (*(min_max.second) - *(min_max.first))/z_scale;
         const double shift = *(min_max.first);
-        std::cerr << "min/max " << *(min_max.first) << "/" << *(min_max.second);
-        std::cerr << " scale/shift " << scale << "/" << shift << std::endl;
-        //const double scale = 1;
-        //const double shift = 0;
+        std::cout << "min/max " << (short)*(min_max.first) << "/" << (short)*(min_max.second);
+        std::cout << " scale/shift " << scale << "/" << shift << std::endl;
         for (uint32 i = 0; i < height; i++)
         {
             for (uint32 j = 0; j < width; j++)
             {
-                data[i * width + j] =
+                data[i * height + j] =
                     (buf[i*height + j] - shift) / scale;
             }
         }
         //_TIFFfree(raster);
+
+        image = new Image_2<FT>(width, height, &data[0]);
     }
 
     ~Landscape_image_2()
@@ -91,56 +95,23 @@ class Landscape_image_2
         */
     }
 
-    size_t xdim() const { return width; }
-    size_t ydim() const { return height; }
+    size_t xdim() const { return image->x_size(); }
+    size_t ydim() const { return image->y_size(); }
 
-#define LINEAR_INTERPOLATION 1
     FT
     operator()(const Point_3& p) const
     {
-        const int x0 = std::floor(CGAL::to_double(p.x()));
-        const int y0 = std::floor(CGAL::to_double(p.y()));
-        const FT* p0 = &data[0] + y0 * height + x0;
+        const FT f = image->interpolate(
+            CGAL::to_double(p.x()), CGAL::to_double(p.y()));
+        //std::cerr << p << " " << f << " " << p.z() - f << std::endl;
 
-        if (x0 < 0 || y0 < 0)
-            return -1;
-
-        FT f;
-#ifdef CONSTANT_INTERPOLATION
-        if (x0 >= width || y0 >= height)
-            return -1;
-
-        f = *p0;
-#endif  // CONSTANT_INTERPOLATION
-
-#ifdef LINEAR_INTERPOLATION
-
-        if (x0 + 1 >= width || y0 + 1 >= height)
-            return -1;
-
-        const FT& f00 = p0[0 * height + 0];
-        const FT& f01 = p0[0 * height + 1];
-        const FT& f10 = p0[1 * height + 0];
-        const FT& f11 = p0[1 * height + 1];
-
-        const FT dx = p.x() - x0;
-        const FT dy = p.y() - y0;
-
-        f = f00 * (1 - dx) * (1 - dy) +
-            f01 *      dx  * (1 - dy) +
-            f10 * (1 - dx) *      dy  +
-            f11 *      dx  *      dy;
-#endif  // LINEAR_INTERPOLATION
-
-        if (f <= 0)
-            return -1;
+        //std::cerr << p.x() << " " << p.y() << " " << p.z() << " -> " << x0 << " " << y0
+            //<< ": " << f << std::endl;
         return p.z() - f;
     }
 
     private:
-    TIFF* tiff_file;
-    uint32 width, height;
-    std::vector<FT> data;
+    Image_2<FT>* image;
 
     private:
     //Landscape_image_2(const Landscape_image_2&);
