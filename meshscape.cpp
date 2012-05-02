@@ -65,9 +65,9 @@ main(int argc, char* argv[])
     K::Point_3 bounding_sphere_center(  // Center of the image
         image.xdim() / 2.,
         image.ydim() / 2.,
-        0);
+        -1);
     K::FT bounding_sphere_squared_radius =  // (diagonal/2)^2 = diagonal^2 / 4;
-        std::min(image.xdim()* image.xdim(), image.ydim() * image.ydim())/4.;
+        (image.xdim()* image.xdim() + image.ydim() * image.ydim())/4. + 255*255;
     K::Sphere_3 bounding_sphere(bounding_sphere_center,
         bounding_sphere_squared_radius);
     std::cout << "center " << bounding_sphere_center << " r " << bounding_sphere_squared_radius << std::endl;
