@@ -72,7 +72,7 @@ main(int argc, char* argv[])
         bounding_sphere_squared_radius);
     std::cout << "center " << bounding_sphere_center << " r " << bounding_sphere_squared_radius << std::endl;
 
-    Surface surface(image, bounding_sphere, 1e-10);
+    Surface surface(image, bounding_sphere, 1e-3/CGAL::sqrt(bounding_sphere_squared_radius));
 
     CGAL::Surface_mesh_default_criteria_3<Tr> mesh_criteria(
         cli.angular_bound,
@@ -86,7 +86,7 @@ main(int argc, char* argv[])
     std::cout << "Start mesh generation." << std::endl;
     Tr tr;
     C2t3 c2t3(tr);
-    CGAL::make_surface_mesh(c2t3, surface, mesh_criteria, CGAL::Non_manifold_tag());
+    CGAL::make_surface_mesh(c2t3, surface, mesh_criteria, CGAL::Manifold_with_boundary_tag());
 
     std::ofstream out(cli.output);
     out << std::setprecision(17);
