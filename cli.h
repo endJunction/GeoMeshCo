@@ -8,6 +8,7 @@ struct CLI {
 
     CLI(int, char**);
 
+    double z_scale;
     double angular_bound;
     double approximation;
     double facet_size;

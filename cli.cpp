@@ -69,6 +69,15 @@ CLI::CLI(int argc, char** argv)
     try {
         TCLAP::CmdLine cmd(message, delimiter, version);
 
+        TCLAP::ValueArg<double> z_scale_arg(
+            "z",
+            "z_scale",
+            "Vertical scale factor. (1.0)",
+            false,
+            1.,
+            "FLOAT");
+        cmd.add(z_scale_arg);
+
         CGAL_mesh_constraint_args constraint_args(cmd);
 
         TCLAP::ValueArg<std::string>* output_arg = construct_output_arg(
@@ -89,6 +98,8 @@ CLI::CLI(int argc, char** argv)
         angular_bound = constraint_args.angular_bound.getValue();
         approximation = constraint_args.distance_bound.getValue();
         facet_size = constraint_args.facet_size.getValue();
+
+        z_scale = z_scale_arg.getValue();
 
     } catch (TCLAP::ArgException &e) {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
