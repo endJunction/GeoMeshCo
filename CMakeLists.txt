@@ -5,6 +5,8 @@ project(MeshScape CXX)
 
 set(CMAKE_CXX_FLAGS "-Wfatal-errors -Wextra -Wall -Weffc++ -std=gnu++11 -pedantic -pipe -march=native -frounding-math")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -DBOOST_UBLAS_NDEBUG")
+#set(CMAKE_CXX_FLAGS "-std=c++0x")
+#set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG -DBOOST_UBLAS_NDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
