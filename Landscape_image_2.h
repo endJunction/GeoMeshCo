@@ -30,6 +30,8 @@
 #define CGAL_EXTENSION_LANDSCAPE_IMAGE_2
 
 #include <tiffio.h>
+#include <algorithm>
+#include <string>
 #include <iostream>
 #include <vector>
 #include <cmath>
