@@ -65,6 +65,12 @@ struct CGAL_mesh_constraint_args {
 };
 
 CLI::CLI(int argc, char** argv)
+    : z_scale(1),
+    angular_bound(30),
+    approximation(0.1),
+    facet_size(0.3),
+    input(""),
+    output("")
 {
     try {
         TCLAP::CmdLine cmd(message, delimiter, version);
