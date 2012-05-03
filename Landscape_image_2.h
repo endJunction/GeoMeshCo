@@ -47,6 +47,7 @@ class Landscape_image_2
 {
     public:
     Landscape_image_2(const std::string& file, const double z_scale)
+        : image(0)
     {
         TIFF* tiff_file = TIFFOpen(file.c_str(), "r");  // TODO check result
         uint32 width, height;
