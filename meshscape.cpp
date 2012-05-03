@@ -55,7 +55,7 @@ main(int argc, char* argv[])
 
     // Load image
     std::cout << "Load image." << std::endl;
-    Image image(cli.input, cli.z_scale);
+    const Image image(cli.input, cli.z_scale);
 
     //
     // Surface
