@@ -5,7 +5,7 @@
 #include <string>
 #include <tclap/CmdLine.h>
 
-const std::string message("MeshScape.   \
+const std::string message("GeoMeshCo.   \
 Copyright (C) 2012 Dmitrij Yu. Naumov.  This program comes \
 with ABSOLUTELY NO WARRANTY;  This is free software, and you are \
 welcome to redistribute it under certain conditions;  For details \

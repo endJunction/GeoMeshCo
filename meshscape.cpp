@@ -1,4 +1,5 @@
-/* "MeshScape" is a collection of mesh creation from geological datasets.
+/* "GeoMeshCo" is a collection of mesh creation utilities for geophysical
+ * applications.
  * 
  * Copyright (C) 2012
  *               Helmholtz Centre for Environmental Research (UFZ)

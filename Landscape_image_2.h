@@ -2,18 +2,18 @@
  * Copyright (C) 2012
  *               Helmholtz Centre for Environmental Research (UFZ)
  *
- * This file is part of "MeshScape." "MeshScape" is free
+ * This file is part of "GeoMeshCo." "GeoMeshCo" is free
  * software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  *
- * "MeshScape" is distributed in the hope that it will be useful,
+ * "GeoMeshCo" is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * "MeshScape".  If not, see <http://www.gnu.org/licenses/>.
+ * "GeoMeshCo".  If not, see <http://www.gnu.org/licenses/>.
  *
  * As a special exception, you have permission to link this program
  * with the Computational Geometry Algorithms Library (CGAL,
