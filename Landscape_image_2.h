@@ -47,7 +47,7 @@ class Landscape_image_2
 {
     public:
     Landscape_image_2(const std::string& file, const double z_scale)
-        : image(0)
+        : _image(0)
     {
         TIFF* tiff_file = TIFFOpen(file.c_str(), "r");  // TODO check result
         uint32 width, height;
@@ -86,7 +86,7 @@ class Landscape_image_2
         }
         //_TIFFfree(raster);
 
-        image = new Image_2<FT>(width, height, &data[0]);
+        _image = new Image_2<FT>(width, height, &data[0]);
     }
 
     ~Landscape_image_2()
@@ -98,15 +98,15 @@ class Landscape_image_2
         */
     }
 
-    size_t xdim() const { return image->x_size(); }
-    size_t ydim() const { return image->y_size(); }
+    size_t xdim() const { return _image->x_size(); }
+    size_t ydim() const { return _image->y_size(); }
 
     FT
     operator()(const Point_3& p) const
     {
         const FT outside_value = 1;
 
-        typedef typename Image_2<FT>::Value Value; const Value f = image->interpolate(
+        typedef typename Image_2<FT>::Value Value; const Value f = _image->interpolate(
             CGAL::to_double(p.x()), CGAL::to_double(p.y()));
 
         if (f)
@@ -129,7 +129,7 @@ class Landscape_image_2
     }
 
     private:
-    Image_2<FT>* image;
+    Image_2<FT>* _image;
 
     private:
     //Landscape_image_2(const Landscape_image_2&);
