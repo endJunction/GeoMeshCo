@@ -1,9 +1,14 @@
 #ifndef IMAGE_2
 #define IMAGE_2
 
+#include <boost/optional.hpp>
+
 template <typename PixelValue>
 class Image_2
 {
+    public:
+    typedef typename boost::optional<PixelValue> Value;
+
     public:
     Image_2(const size_t x, const size_t y, const PixelValue* d)
         : _x_size(x), _y_size(y), _data(0)
@@ -57,26 +62,26 @@ class Image_2
 
 #define LINEAR_INTERPOLATION 1
     inline
-    PixelValue
+    Value
     interpolate(const double x, const double y) const
     {
         if (x < 0 || y < 0)
-            return 0;
+            return Value();
 
         const size_t x0 = std::floor(x);
         const size_t y0 = std::floor(y);
 
 #ifdef CONSTANT_INTERPOLATION
         if (x0 >= _x_size || y0 >= _y_size)
-            return 0;
+            return Value();
 
-        return this->get(x0, y0);
+        return Value(this->get(x0, y0));
 #endif  // CONSTANT_INTERPOLATION
 
 #ifdef LINEAR_INTERPOLATION
 
         if (x0 + 1 >= _x_size || y0 + 1 >= _y_size)
-            return 0;
+            return Value();
 
         static double fs[4];
         this->getPatch(x0, y0, 1, fs);
@@ -88,10 +93,10 @@ class Image_2
 
         const double weights[4] = { dx1 * dy1, dx * dy1, dx1 * dy, dx * dy };
 
-        return fs[0] * weights[0] +
+        return Value(fs[0] * weights[0] +
             fs[1] * weights[1] +
             fs[2] * weights[2] +
-            fs[3] * weights[3];
+            fs[3] * weights[3]);
 
 #endif  // LINEAR_INTERPOLATION
     }

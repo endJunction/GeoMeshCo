@@ -104,13 +104,28 @@ class Landscape_image_2
     FT
     operator()(const Point_3& p) const
     {
-        const FT f = image->interpolate(
+        const FT outside_value = 1;
+
+        typedef typename Image_2<FT>::Value Value; const Value f = image->interpolate(
             CGAL::to_double(p.x()), CGAL::to_double(p.y()));
+
+        if (f)
+        {
+            if (*f == 0)    // Image is not defined here like on image boundary.
+                return outside_value;
+
+            if (p.z() <= 0)
+                return -p.z();
+
+            return p.z() - *f;
+        }
+
+        return outside_value;   // outside image;
+
         //std::cerr << p << " " << f << " " << p.z() - f << std::endl;
 
         //std::cerr << p.x() << " " << p.y() << " " << p.z() << " -> " << x0 << " " << y0
             //<< ": " << f << std::endl;
-        return p.z() - f;
     }
 
     private:
