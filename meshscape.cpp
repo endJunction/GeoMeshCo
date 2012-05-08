@@ -31,6 +31,8 @@
 #include <fstream>
 #include "cli.h"
 #include "Landscape_image_2.h"
+#include "Image_reader_2.h"
+#include "Image_2.h"
 
 #include <CGAL/Surface_mesh_default_triangulation_3.h>
 #include <CGAL/Surface_mesh_default_criteria_3.h>
@@ -44,9 +46,11 @@ typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
 typedef CGAL::Complex_2_in_triangulation_3<Tr> C2t3;
 
 typedef Tr::Geom_traits K;
-typedef CGAL_Extension::Landscape_image_2<K::FT, K::Point_3> Image;
-typedef CGAL::Implicit_surface_3<K, Image> Surface;
+typedef Image_2<short, K::FT> Image;
+typedef CGAL_Extension::Landscape_image_2<K::FT, K::Point_3> LandscapeImage;
+typedef CGAL::Implicit_surface_3<K, LandscapeImage> Surface;
 
+#define POW2(x) ((x)*(x))
 
 int
 main(int argc, char* argv[])
@@ -56,7 +60,16 @@ main(int argc, char* argv[])
 
     // Load image
     std::cout << "Load image." << std::endl;
-    const Image image(cli.input, cli.z_scale);
+    const TIFF_image_reader_2 reader(cli.input);
+    if (reader.bpp() != 16)
+    {
+        std::cerr << "Non 16 bit images are not supported.\n";
+        return EXIT_FAILURE;
+    }
+
+    const Image* const image = reader.get_image<short, K::FT>();
+
+    const LandscapeImage landscape(*image);
 
     //
     // Surface
@@ -64,17 +77,17 @@ main(int argc, char* argv[])
     std::cout << "Create mesh surface." << std::endl;
     // Find bounding sphere.
     K::Point_3 bounding_sphere_center(  // Center of the image
-        image.xdim() / 2.,
-        image.ydim() / 2.,
+        image->x_size() / 2.,
+        image->y_size() / 2.,
         -1);
     K::FT bounding_sphere_squared_radius =  // (diagonal/2)^2 = diagonal^2 / 4;
-        (image.xdim()* image.xdim() + image.ydim() * image.ydim())/4.
-            + cli.z_scale*cli.z_scale;
+        (POW2(image->x_size()) + POW2(image->y_size()))/4.
+            + POW2(32768./cli.z_scale);
     K::Sphere_3 bounding_sphere(bounding_sphere_center,
         bounding_sphere_squared_radius);
     std::cout << "center " << bounding_sphere_center << " r " << bounding_sphere_squared_radius << std::endl;
 
-    Surface surface(image, bounding_sphere, 1e-3/CGAL::sqrt(bounding_sphere_squared_radius));
+    Surface surface(landscape, bounding_sphere, 1e-3/CGAL::sqrt(bounding_sphere_squared_radius));
 
     CGAL::Surface_mesh_default_criteria_3<Tr> mesh_criteria(
         cli.angular_bound,
@@ -89,6 +102,8 @@ main(int argc, char* argv[])
     Tr tr;
     C2t3 c2t3(tr);
     CGAL::make_surface_mesh(c2t3, surface, mesh_criteria, CGAL::Manifold_with_boundary_tag());
+
+    delete image;
 
     std::ofstream out(cli.output);
     out << std::setprecision(17);
