@@ -52,15 +52,15 @@ class Landscape_image_2
     FT
     operator()(const Point_3& p) const
     {
+        if (p.z() <= _bottom)
+            return _out_value;
+
         typedef typename Image_2<short, FT>::Value Value;
         const Value f = _image.interpolate(
             CGAL::to_double(p.x()), CGAL::to_double(p.y()));
 
         if (f)
         {
-            if (p.z() <= _bottom)
-                return -p.z();
-
             return p.z() - *f/_z_scale;
         }
 
