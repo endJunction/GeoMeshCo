@@ -40,17 +40,6 @@ class Image_2
         return _data[_x_size*y + x];
     }
 
-    inline
-    void
-    getPatch(const size_t x, const size_t y, const unsigned short s,
-        PixelT* const patch) const
-    {
-        PixelT* p0 = _data + y * _x_size + x;   // pointer to BL corner.
-        for (unsigned short i = 0; i <= s; i++)
-            for (unsigned short j = 0; j <= s; j++)
-                patch[i*(s+1) + j] = *(p0 + i * _x_size + j);
-    }
-
 #define LINEAR_INTERPOLATION 1
     inline
     Value
@@ -91,6 +80,25 @@ class Image_2
 
 #endif  // LINEAR_INTERPOLATION
     }
+
+    private:
+    /// Writes pixel values of a patch to given pointer.
+    ///
+    /// A patch is a square subsection of image of size \f$(s+1)^2\f$.
+    /// The values are written in following order:\n
+    /// {(x,y), ..., (x+s,y), ... , (x,y+s), ..., (x+s,y+s)}.
+    /// \pre    Allocated \c patch memory size \f$\ge (s+1)^2\f$.
+    inline
+    void
+    getPatch(const size_t x, const size_t y, const unsigned short s,
+        PixelT* const patch) const
+    {
+        PixelT* p0 = _data + y * _x_size + x;   // pointer to BL corner.
+        for (unsigned short i = 0; i <= s; i++)
+            for (unsigned short j = 0; j <= s; j++)
+                patch[i*(s+1) + j] = *(p0 + i * _x_size + j);
+    }
+
 
     private:
     size_t _x_size;
