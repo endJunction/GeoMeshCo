@@ -66,6 +66,7 @@ struct CGAL_mesh_constraint_args {
 
 CLI::CLI(int argc, char** argv)
     : z_scale(1),
+    bottom(-1/z_scale),
     angular_bound(30),
     approximation(0.1),
     facet_size(0.3),
@@ -74,6 +75,15 @@ CLI::CLI(int argc, char** argv)
 {
     try {
         TCLAP::CmdLine cmd(message, delimiter, version);
+
+        TCLAP::ValueArg<double> bottom_arg(
+            "b",
+            "bottom",
+            "z-value of surfaces buttom. (-1/z_scale)",
+            false,
+            -1.,
+            "FLOAT");
+        cmd.add(bottom_arg);
 
         TCLAP::ValueArg<double> z_scale_arg(
             "z",
@@ -106,6 +116,8 @@ CLI::CLI(int argc, char** argv)
         facet_size = constraint_args.facet_size.getValue();
 
         z_scale = z_scale_arg.getValue();
+        bottom = bottom_arg.getValue();
+        bottom /= z_scale;
 
     } catch (TCLAP::ArgException &e) {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;

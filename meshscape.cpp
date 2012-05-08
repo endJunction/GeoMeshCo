@@ -69,7 +69,7 @@ main(int argc, char* argv[])
 
     const Image* const image = reader.get_image<short, K::FT>();
 
-    const LandscapeImage landscape(*image);
+    const LandscapeImage landscape(*image, cli.bottom, cli.z_scale);
 
     //
     // Surface
