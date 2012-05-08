@@ -86,7 +86,7 @@ class Landscape_image_2
         }
         //_TIFFfree(raster);
 
-        _image = new Image_2<FT>(width, height, &data[0]);
+        _image = new Image_2<double, FT>(width, height, &data[0]);
     }
 
     ~Landscape_image_2()
@@ -106,7 +106,8 @@ class Landscape_image_2
     {
         const FT outside_value = 1;
 
-        typedef typename Image_2<FT>::Value Value; const Value f = _image->interpolate(
+        typedef typename Image_2<double, FT>::Value Value;
+        const Value f = _image->interpolate(
             CGAL::to_double(p.x()), CGAL::to_double(p.y()));
 
         if (f)
@@ -129,7 +130,7 @@ class Landscape_image_2
     }
 
     private:
-    Image_2<FT>* _image;
+    Image_2<double, FT>* _image;
 
     private:
     //Landscape_image_2(const Landscape_image_2&);
