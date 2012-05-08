@@ -76,16 +76,24 @@ main(int argc, char* argv[])
     //
     std::cout << "Create mesh surface." << std::endl;
     // Find bounding sphere.
+    const K::FT image_center_value =
+        *image->interpolate(image->x_size() / 2., image->y_size() / 2.)/cli.z_scale;
+    std::cout << "value " << image_center_value << std::endl;
+
     K::Point_3 bounding_sphere_center(  // Center of the image
         image->x_size() / 2.,
         image->y_size() / 2.,
-        -1);
+        (cli.bottom + image_center_value)/2.);
     K::FT bounding_sphere_squared_radius =  // (diagonal/2)^2 = diagonal^2 / 4;
         (POW2(image->x_size()) + POW2(image->y_size()))/4.
             + POW2(std::numeric_limits<short>::max()/cli.z_scale);
     K::Sphere_3 bounding_sphere(bounding_sphere_center,
         bounding_sphere_squared_radius);
-    std::cout << "center " << bounding_sphere_center << " r " << bounding_sphere_squared_radius << std::endl;
+    std::cout << "center " << bounding_sphere_center << " r "
+        << CGAL::sqrt(bounding_sphere_squared_radius) << std::endl;
+
+    std::cout << "landscape value in center "
+        << landscape(bounding_sphere_center) << std::endl;
 
     Surface surface(landscape, bounding_sphere, 1e-3/CGAL::sqrt(bounding_sphere_squared_radius));
 
