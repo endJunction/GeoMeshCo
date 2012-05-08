@@ -11,9 +11,8 @@ class Image_2
 
     public:
     Image_2(const size_t x, const size_t y, const PixelT* d)
-        : _x_size(x), _y_size(y), _data(0)
+        : _x_size(x), _y_size(y), _data(new PixelT[x*y])
     {
-        _data = new PixelT[x*y];
         for (size_t i = 0; i < x*y; i++)
             _data[i] = d[i];
         //std::copy(d, d+x*y, &_data);
