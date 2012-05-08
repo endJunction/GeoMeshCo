@@ -6,10 +6,10 @@
 #include <tclap/CmdLine.h>
 
 const std::string message("GeoMeshCo.   \
-Copyright (C) 2012 Dmitrij Yu. Naumov.  This program comes \
-with ABSOLUTELY NO WARRANTY;  This is free software, and you are \
-welcome to redistribute it under certain conditions;  For details \
-see the LICENSE file.");
+Copyright (C) 2012 Helmholtz Centre for Environmental Research (UFZ). \
+This program comes with ABSOLUTELY NO WARRANTY;  This is free software, \
+and you are welcome to redistribute it under certain conditions; \
+For details see the LICENSE file.");
 
 const char delimiter(' ');
 const std::string version("0.1");
